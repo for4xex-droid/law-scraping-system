@@ -1,0 +1,27 @@
+[project]
+name = "law-scraping-system"
+version = "0.1.0"
+description = "AI-Native Python Project Template"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0"
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
