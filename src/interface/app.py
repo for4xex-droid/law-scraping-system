@@ -1,6 +1,7 @@
-import streamlit as st
-import requests
 import os
+
+import requests
+import streamlit as st
 
 # --- Configuration ---
 API_URL = "http://localhost:3000/search"
@@ -168,15 +169,23 @@ else:
                             meta = article.get("metadata", {})
                             text = article.get("document", "")
                             art_num = meta.get("article_number", "条文")
+                            anchor_id = f"art_{i}"
 
-                            # ID for anchor (not fully supported but good practice)
+                            # Anchor Point
+                            st.markdown(
+                                f"<div id='{anchor_id}'></div>",
+                                unsafe_allow_html=True,
+                            )
+
+                            # Article Display
                             st.markdown(f"#### {art_num}")
                             st.text_area(
                                 "内容",
                                 text,
                                 height=150,
-                                key=f"text_{art_num}_{selected_law}",
+                                key=f"text_{i}_{selected_law}",
                             )
+                            st.divider()
                             st.divider()
                     else:
                         st.error("Failed to load content.")
