@@ -1,0 +1,18 @@
+
+=== SQLite Registered Laws ===
+介護保険法: 399 articles
+児童福祉法: 387 articles
+児童虐待の防止等に関する法律: 39 articles
+生活保護法: 126 articles
+生活困窮者自立支援法: 30 articles
+知的障害者福祉法: 34 articles
+社会福祉法: 277 articles
+精神保健及び精神障害者福祉に関する法律: 138 articles
+老人福祉法: 77 articles
+身体障害者福祉法: 61 articles
+配偶者からの暴力の防止及び被害者の保護等に関する法律: 44 articles
+障害者の日常生活及び社会生活を総合的に支援するための法律: 174 articles
+障害者虐待の防止、障害者の養護者に対する支援等に関する法律: 46 articles
+高齢者虐待の防止、高齢者の養護者に対する支援等に関する法律: 30 articles
+
+✅ 障害者虐待防止法 is Present in SQLite.
