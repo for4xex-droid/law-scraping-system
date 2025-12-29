@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import os
-import sys
 
 # --- Configuration ---
 API_URL = "http://localhost:3000/search"

@@ -1,8 +1,7 @@
-
+use anyhow::{Context, Result, anyhow};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use anyhow::{Result, Context, anyhow};
+use serde_json::{Value, json};
 
 #[derive(Clone)]
 pub struct GeminiClient {
@@ -35,7 +34,9 @@ impl GeminiClient {
             "taskType": "RETRIEVAL_DOCUMENT" // Matching Python behavior
         });
 
-        let resp = self.client.post(&url)
+        let resp = self
+            .client
+            .post(&url)
             .json(&body)
             .send()
             .await
@@ -46,29 +47,37 @@ impl GeminiClient {
             return Err(anyhow!("Gemini API Error: {}", error_text));
         }
 
-        let json: Value = resp.json().await.context("Failed to parse embedding response")?;
-        
+        let json: Value = resp
+            .json()
+            .await
+            .context("Failed to parse embedding response")?;
+
         // Extract embedding
         // Response format: { "embedding": { "values": [ ... ] } }
         let values = json["embedding"]["values"]
             .as_array()
             .context("Invalid embedding format")?;
 
-        let vec: Vec<f32> = values.iter()
+        let vec: Vec<f32> = values
+            .iter()
             .map(|v| v.as_f64().unwrap_or(0.0) as f32)
             .collect();
 
         Ok(vec)
     }
 
-    pub async fn generate_intent(&self, prompt: &str, candidates: &[String]) -> Result<Vec<String>> {
+    pub async fn generate_intent(
+        &self,
+        prompt: &str,
+        candidates: &[String],
+    ) -> Result<Vec<String>> {
         let url = format!(
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={}",
             self.api_key
         );
 
         let candidates_json = serde_json::to_string(candidates).unwrap_or_default();
-        
+
         let system_prompt = format!(
             "You are a Japanese Social Welfare Law expert. \
             Select 1-3 highly relevant laws for the USER QUERY from the Candidate List. \
@@ -90,14 +99,11 @@ impl GeminiClient {
             }]
         });
 
-        let resp = self.client.post(&url)
-            .json(&body)
-            .send()
-            .await?;
+        let resp = self.client.post(&url).json(&body).send().await?;
 
-         if !resp.status().is_success() {
-             return Err(anyhow!("Gemini Gen Error: {}", resp.status()));
-         }
+        if !resp.status().is_success() {
+            return Err(anyhow!("Gemini Gen Error: {}", resp.status()));
+        }
 
         let json: Value = resp.json().await?;
         // Parse parts.text

@@ -1,7 +1,6 @@
 import sys
 import os
 import json
-import numpy as np
 
 # Ensure we can import from src
 sys.path.append(os.getcwd())
