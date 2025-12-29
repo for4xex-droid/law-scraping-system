@@ -87,9 +87,29 @@ def start_frontend():
         pass
 
 
+def sync_env():
+    """Sync root .env to backend/.env to ensure API key availability."""
+    root_env = ".env"
+    backend_env = os.path.join(BACKEND_DIR, ".env")
+
+    if os.path.exists(root_env):
+        try:
+            # Read logic that handles encoding could be better, but simple copy is usually enough.
+            # However, shutil.copy helps.
+            import shutil
+
+            shutil.copy(root_env, backend_env)
+            print("✅ Synced .env to backend/.env")
+        except Exception as e:
+            print(f"⚠️ Failed to sync .env: {e}")
+    else:
+        print("ℹ️ No root .env found. Ensure backend/.env exists or env vars are set.")
+
+
 def main():
     print("🚀 Launching Law Scraping System...")
 
+    sync_env()
     backend_proc = start_backend()
 
     try:
