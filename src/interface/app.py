@@ -74,9 +74,16 @@ if mode == "🔎 法令検索":
 
                     # HTML Formatting
                     if not results:
-                        html_content = "<div class='law-card'>該当する条文が見つかりませんでした。</div>"
+                        html_content = (
+                            "<div class='law-card'>"
+                            "該当する条文が見つかりませんでした。"
+                            "</div>"
+                        )
                     else:
-                        html_content = f"<div class='result-stats'>関連条文 <b>{len(results)}件</b> Hit</div>"
+                        html_content = (
+                            "<div class='result-stats'>関連条文 "
+                            f"<b>{len(results)}件</b> Hit</div>"
+                        )
 
                         for item in results:
                             doc_text = item.get("document", "")
@@ -136,13 +143,12 @@ else:
                         articles = res_content.json().get("articles", [])
 
                         # --- Sorting ---
-                        # Try to soft-sort by assuming logical order of retrieval or metadata
+                        # (Keeping original order for now)
                         pass
 
                         # --- Sidebar TOC ---
                         st.sidebar.markdown("### 📑 条注目次")
 
-                        # toc_html = "<div style='max-height: 80vh; overflow-y: auto; font-size: 0.9em;'>"
                         for i, article in enumerate(articles):
                             meta = article.get("metadata", {})
                             art_num = meta.get("article_number", f"Article {i + 1}")
@@ -150,7 +156,7 @@ else:
                             anchor_id = f"art_{i}"
 
                             # Add link to sidebar
-                            # Streamlit Sidebar Markdown links to main page anchors work in most versions.
+                            # Markdown links to anchors work in most Streamlit versions.
                             st.sidebar.markdown(
                                 f"[{art_num}](#{anchor_id})", unsafe_allow_html=True
                             )
