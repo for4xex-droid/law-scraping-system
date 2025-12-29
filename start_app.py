@@ -31,24 +31,42 @@ def kill_port_process(port):
 
 
 def start_backend():
-    print("\n🦀 [1/2] Starting Rust Backend (cargo run)...")
+    print("\n🦀 [1/2] Starting Rust Backend...")
     # Check if port 3000 is occupied
     if is_port_in_use(3000):
         kill_port_process(3000)
 
-    # We use shell=False to better control the process, but on Windows cargo might need shell=True if slightly misconfigured.
-    # Usually standard install works without shell=True.
+    # 1. Try running pre-built binary (Best for Docker/Production)
+    # Check for both Windows and Linux binary paths
+    binary_name = "backend.exe" if sys.platform == "win32" else "backend"
+    binary_path = os.path.join(BACKEND_DIR, "target", "release", binary_name)
+
+    if os.path.exists(binary_path):
+        print(f"📦 Found pre-built binary at {binary_path}")
+        try:
+            proc = subprocess.Popen(
+                [binary_path],
+                cwd=BACKEND_DIR,
+            )
+            return proc
+        except Exception as e:
+            print(f"⚠️ Failed to run binary: {e}. Falling back to cargo...")
+
+    # 2. Fallback to cargo run (Best for Dev)
+    print("🔨 Running via 'cargo run'...")
     try:
-        # Popen allows us to run it without blocking
         proc = subprocess.Popen(
-            ["cargo", "run", "--quiet"],
+            [
+                "cargo",
+                "run",
+                "--quiet",
+                "--release",
+            ],  # Use release for speed if possible
             cwd=BACKEND_DIR,
-            # We don't pipe stdout/stderr so the user can see Rust logs directly in the console
-            # If you want to hide them, use stdout=subprocess.DEVNULL
         )
         return proc
     except FileNotFoundError:
-        print("❌ 'cargo' not found. Please install Rust.")
+        print("❌ 'cargo' not found and no binary detected. Please install Rust.")
         sys.exit(1)
 
 
@@ -76,10 +94,20 @@ def wait_for_backend(timeout=300):
     return False
 
 
-def start_frontend():
-    print("\n🐍 [2/2] Starting Streamlit Frontend...")
+def start_frontend(port=8501):
+    print(f"\n🐍 [2/2] Starting Streamlit Frontend on port {port}...")
     # Use the current python interpreter
-    cmd = [sys.executable, "-m", "streamlit", "run", FRONTEND_SCRIPT]
+    cmd = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        FRONTEND_SCRIPT,
+        "--server.address=0.0.0.0",
+        f"--server.port={port}",
+        "--browser.serverAddress=0.0.0.0",
+        "--theme.base=dark",
+    ]
 
     try:
         subprocess.run(cmd, check=True)
@@ -114,8 +142,10 @@ def main():
 
     try:
         if wait_for_backend():
-            # Backend is up, launch frontend (this will block until frontend is closed)
-            start_frontend()
+            # Check for PORT environment variable (common in PaaS like Render)
+            # Default to 8501 if not set
+            server_port = os.environ.get("PORT", "8501")
+            start_frontend(port=server_port)
         else:
             print("Failed to start system.")
     except KeyboardInterrupt:

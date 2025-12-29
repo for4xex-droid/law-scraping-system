@@ -1,0 +1,49 @@
+# 1. Build Rust Backend
+FROM rust:1.83-slim-bookworm as builder
+WORKDIR /app
+COPY backend/ .
+# Create dummy file to force build dependencies? No, backend/ is small enough usually.
+RUN cargo build --release
+
+# 2. Runtime Environment
+FROM python:3.10-slim-bookworm
+WORKDIR /app
+
+# Install basic system deps
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Rust binary from builder
+COPY --from=builder /app/target/release/backend /app/backend/target/release/backend
+# Also need to ensure the binary is in a place expected by start_app.py or we modify start_app.py
+# start_app.py runs "cargo run". We should change it to run the binary directly if in deployment.
+# But "cargo run" inside Docker is heavy (needs rust toolchain in runtime).
+# BETTER: Install minimal rust toolchain OR modify start_app.py to run binary.
+# Given time constraints, let's install minimal rust (cargo) to keep start_app.py simple?
+# NO, installing Rust in runtime is roughly 1GB.
+# Let's Modify start_app.py to run binary if "cargo" not found but binary exists?
+# Or clearer: Just install Rust in the runtime image. It's "easiest" for the user.
+# Wait, user wants "free". Render free tier has limits (512MB RAM). Compiling takes RAM.
+# So MULTI-STAGE is essential.
+# So start_app.py MUST support running binary directly.
+
+# Let's just put the binary where expected.
+# Actually start_app.py runs `cargo run`.
+# We can create a shim `cargo` script? No.
+# Let's adjust the Dockerfile to just RUN the Python script, 
+# AND ensure we have a way to start the backend without cargo.
+# But start_app.py is hardcoded to `cargo run`.
+
+# Simpler path for NOW: Install Rust in the runtime image. 
+# It increases image size but ensures `cargo run --release` works (it will just run the binary if built).
+# Render Free Tier supports Docker.
+# BUT compilation on Render Free Tier might be too slow/OOM.
+# So we SHOULD use multi-stage.
+
+# Let's modify start_app.py to check for binary first?
+# "backend/target/release/backend" (on linux)
+
+# For now, let's just make a Dockerfile that copies the binary and we invoke it via a small shell script or modify start_app.py?
+# I'll modify start_app.py to prefer binary if present.
+
