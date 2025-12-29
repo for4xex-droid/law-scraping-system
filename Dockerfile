@@ -1,43 +1,40 @@
-# Multi-stage build for optimal image size
-# 1. Builder Stage (Rust)
-FROM rust:1.83-slim-bookworm as builder
-WORKDIR /app
-COPY backend/ ./backend/
-# Build the application in release mode
-WORKDIR /app/backend
-# Ensure pkg-config and ssl are available
-RUN apt-get update && apt-get install -y pkg-config libssl-dev
-# Build
-RUN cargo build --release
-
-# 2. Runtime Stage (Python + Rust Binary)
+# Use a single image that has Python, and we will install Rust.
+# This avoids multi-stage complexity and ensures paths line up exactly as they do in local dev.
 FROM python:3.10-slim-bookworm
+
 WORKDIR /app
 
 # Install system dependencies
-# libssl is needed for the rust binary to talk to Gemini API (HTTPS)
+# curl/build-essential for installing Rust
+# pkg-config/libssl-dev for building dependencies
 RUN apt-get update && apt-get install -y \
-    ca-certificates \
+    curl \
+    build-essential \
+    pkg-config \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Rust binary from builder
-# We place it exactly where start_app.py expects it: backend/target/release/backend
-COPY --from=builder /app/backend/target/release/backend /app/backend/target/release/backend
-# Also copy the data file (index.json) which is in backend/data
-COPY backend/data /app/backend/data
-# Copy the static data code? No, binary is compiled.
-# But start_app.py expects "backend" directory structure for Cwd.
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Copy Python application
+# Copy entire project
 COPY . .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Render sets PORT environment variable. Streamlit needs to listen on this.
-# start_app.py is updated to handle this but we should expose 8501 just in case
+# Build Rust backend
+# We build it here so checking "cargo run" in start_app.py will find the binary or just compile fast.
+# Actually, let's just pre-build it so start_app.py runs fast.
+WORKDIR /app/backend
+RUN cargo build --release
+WORKDIR /app
+
+# Expose Streamlit port
 EXPOSE 8501
 
-# Run the orchestration script
+# Run the orchestration script using Unbuffered output to see logs
+ENV PYTHONUNBUFFERED=1
 CMD ["python", "start_app.py"]
+

@@ -69,5 +69,10 @@ The backend has been completely rewritten in **Rust** for performance and stabil
         - **Law Search**: AI-powered vector search with intent recognition.
         - **Browse Mode**: Read full text of laws with sidebar navigation.
 
+- **Deployment (Render.com)**:
+    1. **Runtime**: Select **Docker**.
+    2. **Environment Variables**: Add `GOOGLE_API_KEY`.
+    3. **Plan**: Free Tier (Zero cost).
+
 
 
