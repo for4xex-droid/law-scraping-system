@@ -66,8 +66,10 @@ if mode == "🔎 法令検索":
 
                     # AI Intent Info
                     if targeted_laws:
+                        intent_str = intent_msg or "Detected"
+                        laws_str = ", ".join(targeted_laws)
                         st.info(
-                            f"💡 **AI Intent**: {intent_msg or 'Detected'} -> 限定検索: {', '.join(targeted_laws)}"
+                            f"💡 **AI Intent**: {intent_str} -> 限定検索: {laws_str}"
                         )
 
                     # HTML Formatting
@@ -107,7 +109,8 @@ if mode == "🔎 法令検索":
 
             except requests.exceptions.ConnectionError:
                 st.error(
-                    "❌ Cannot connect to Backend. Is the Rust server running? (localhost:3000)"
+                    "❌ Cannot connect to Backend. "
+                    "Is the Rust server running? (localhost:3000)"
                 )
             except Exception as e:
                 st.error(f"An unexpected error occurred: {e}")
@@ -134,29 +137,19 @@ else:
 
                         # --- Sorting ---
                         # Try to soft-sort by assuming logical order of retrieval or metadata
-                        # Ideally, we would parse "第一条" etc, but for now let's trust the backend or sort by ID if possible
-                        # Let's try to sort by 'id' if it exists in metadata or just keep as is if it looks OK.
-                        # Simple alphanumeric sort of article_number might be better than random.
-                        def sort_key(a):
-                            # Try to extract number from article_number for sorting?
-                            # e.g. "第一条" -> 1. Very hard to do perfectly with Kansuuji without library.
-                            # Fallback: Sort by ID if available (often law_name + sequqence)
-                            return a.get("metadata", {}).get("id", "")
-
-                        # articles.sort(key=sort_key)
-                        # (Keeping original order for now as Chroma often returns insertion order which is usually correct for single file ingestion)
+                        pass
 
                         # --- Sidebar TOC ---
                         st.sidebar.markdown("### 📑 条注目次")
 
-                        toc_html = "<div style='max-height: 80vh; overflow-y: auto; font-size: 0.9em;'>"
+                        # toc_html = "<div style='max-height: 80vh; overflow-y: auto; font-size: 0.9em;'>"
                         for i, article in enumerate(articles):
                             meta = article.get("metadata", {})
                             art_num = meta.get("article_number", f"Article {i + 1}")
                             # Create a unique clean ID
                             anchor_id = f"art_{i}"
 
-                            # Add link to sidebar (using HTML for better control if markdown fails, or just Markdown)
+                            # Add link to sidebar
                             # Streamlit Sidebar Markdown links to main page anchors work in most versions.
                             st.sidebar.markdown(
                                 f"[{art_num}](#{anchor_id})", unsafe_allow_html=True
@@ -186,7 +179,6 @@ else:
                                 key=f"text_{i}_{selected_law}",
                             )
                             st.divider()
-                            st.divider()
                     else:
                         st.error("Failed to load content.")
         else:
@@ -200,8 +192,10 @@ else:
 st.divider()
 for msg in st.session_state.messages[:6]:
     if msg["role"] == "user":
+        content = msg["content"]
         st.markdown(
-            f"<div style='display:flex; justify-content:flex-end;'><div class='user-bubble'>{msg['content']}</div></div>",
+            f"<div style='display:flex; justify-content:flex-end;'>"
+            f"<div class='user-bubble'>{content}</div></div>",
             unsafe_allow_html=True,
         )
     else:
