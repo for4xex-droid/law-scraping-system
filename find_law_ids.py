@@ -40,3 +40,4 @@ search_law_id("配偶者からの暴力の防止及び被害者の保護等に�
 search_law_id("精神保健福祉士法")
 search_law_id("精神保健福祉士法施行令")
 search_law_id("精神保健福祉士法施行規則")
+search_law_id("社会福祉士及び介護福祉士法")

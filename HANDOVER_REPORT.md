@@ -107,5 +107,10 @@ Added **Mental Health Social Worker Act (精神保健福祉士法)** to the data
 - **Status**: Complete. The Rust backend will now search this law when restarted.
     - Total Articles for this law: 51
 
+### Added "Certified Social Worker and Certified Care Worker Act"
+Also added **社会福祉士及び介護福祉士法** (ID: `362AC0000000030`) as requested.
+- **Status**: Complete.
+    - Total Articles: 68
+
 
 
