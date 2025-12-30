@@ -95,5 +95,17 @@ The following security measures have been implemented to ensure safe operation:
     - Location: `C:\Users\user\.gemini\security-starter-kit`
     - Contains `sentinel.exe`, `start-scan.ps1`, `secure_requirements.txt`, and Guardrails templates.
 
+## 10. Data Update (2025-12-31)
+Added **Mental Health Social Worker Act (精神保健福祉士法)** to the database.
+
+- **Objective**: Improve search relevance for queries related to mental health social workers.
+- **Actions Taken**:
+    1.  Updated `populate_db.py` to target "精神保健福祉士法" (ID: `409AC0000000131`).
+    2.  Fetched latest XML data from e-Gov API and stored in SQLite.
+    3.  Re-indexed the entire database (embeddings) using `indexer.py`.
+    4.  Exported new vector data to `backend/data/index.json`.
+- **Status**: Complete. The Rust backend will now search this law when restarted.
+    - Total Articles for this law: 51
+
 
 
