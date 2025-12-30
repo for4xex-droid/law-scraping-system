@@ -117,5 +117,13 @@ Also added **少年法** (ID: `323AC0000000168`) as requested.
 - **Status**: Complete.
     - Total Articles: 98
 
+### Added "Disaster Acts"
+Also added the following laws as requested:
+- **Disaster Countermeasures Basic Act (災害対策基本法)** (ID: `336AC0000000223`)
+    - Total Articles: 210
+- **Disaster Relief Act (災害救助法)** (ID: `322AC0000000118`)
+    - Total Articles: 38
+- **Status**: Complete.
+
 
 
