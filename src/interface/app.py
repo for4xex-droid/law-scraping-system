@@ -128,7 +128,7 @@ else:
 
     # Fetch list of laws
     try:
-        res = requests.get("http://localhost:3000/laws")
+        res = requests.get("http://localhost:3000/laws", timeout=30)
         if res.status_code == 200:
             law_list = res.json()
             selected_law = st.selectbox("閲覧する法令を選択", law_list)
@@ -138,6 +138,7 @@ else:
                     res_content = requests.post(
                         "http://localhost:3000/laws/content",
                         json={"law_name": selected_law},
+                        timeout=30,
                     )
                     if res_content.status_code == 200:
                         articles = res_content.json().get("articles", [])

@@ -12,10 +12,12 @@ use tokio::fs;
 use tower_http::cors::CorsLayer;
 
 mod gemini;
+mod guardrails;
 mod models;
 mod static_data;
 
 use gemini::GeminiClient;
+use guardrails::{ValidationResult, validate_input}; // Import guardrails
 use models::{LawDocument, SearchResult, cosine_similarity};
 use static_data::{
     get_boost_articles, get_child_keywords, get_law_alias_map, get_penalty_keywords,
@@ -151,6 +153,17 @@ async fn search_handler(
     let query = payload.query;
 
     println!("Search Query: {}", query);
+
+    // --- Guardrails Check ---
+    if let ValidationResult::Blocked(reason) = validate_input(&query) {
+        println!("Guardrail Blocked: {}", reason);
+        return Json(SearchResponse {
+            results: vec![],
+            intent: Some(format!("Security Block: {}", reason)),
+            targeted_laws: vec![],
+        });
+    }
+    // -------------------------
 
     // 1. Embedding
     let query_vec = match state.gemini_client.embed_text(&query).await {

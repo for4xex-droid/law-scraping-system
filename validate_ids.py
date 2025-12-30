@@ -1,5 +1,5 @@
 import requests
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET
 
 
 def check_law_id(law_id, name_hint):

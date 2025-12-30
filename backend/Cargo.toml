@@ -7,6 +7,7 @@ edition = "2024"
 anyhow = "1.0.100"
 axum = "0.7.5"
 dotenv = "0.15.0"
+regex = "1.12.2"
 reqwest = { version = "0.12.28", features = ["json", "rustls-tls"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.148"
