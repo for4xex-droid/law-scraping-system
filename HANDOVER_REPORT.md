@@ -75,5 +75,25 @@ The backend has been completely rewritten in **Rust** for performance and stabil
     3. **Plan**: Free Tier (Zero cost).
     4. **Status**: Verified & Deployed Success ✅
 
+## 9. Security Improvements (2025-12-31)
+The following security measures have been implemented to ensure safe operation:
+
+1.  **Vulnerability Scanning (Sentinel Tool)**:
+    - Created `Sentinel`, a custom security scanner in Rust.
+    - Scans for project type (Rust/Python), runs standard audit tools (`cargo-audit`, `pip-audit`, `bandit`), and detects hardcoded secrets.
+    - **Outcome**: Fixed "XML External Entity" vulnerability in Python scripts and added timeouts to all HTTP requests to prevent DoS.
+
+2.  **Guardrails (Backend Protection)**:
+    - Implemented `guardrails.rs` in the Rust backend.
+    - **Active Checks**:
+        - **Prompt Injection**: Blocks inputs like "Ignore previous instructions".
+        - **XSS/Scripting**: Blocks HTML/JS injection attempts.
+        - **Length Limit**: Rejects queries > 1000 chars to prevent memory exhaustion DoS.
+
+3.  **Security Starter Kit**:
+    - Packaged these tools for re-use in future projects.
+    - Location: `C:\Users\user\.gemini\security-starter-kit`
+    - Contains `sentinel.exe`, `start-scan.ps1`, `secure_requirements.txt`, and Guardrails templates.
+
 
 
