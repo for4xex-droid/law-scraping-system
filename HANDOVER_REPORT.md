@@ -112,5 +112,10 @@ Also added **社会福祉士及び介護福祉士法** (ID: `362AC0000000030`) a
 - **Status**: Complete.
     - Total Articles: 68
 
+### Added "Juvenile Act"
+Also added **少年法** (ID: `323AC0000000168`) as requested.
+- **Status**: Complete.
+    - Total Articles: 98
+
 
 
