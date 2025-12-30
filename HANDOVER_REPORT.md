@@ -125,5 +125,13 @@ Also added the following laws as requested:
     - Total Articles: 38
 - **Status**: Complete.
 
+### Added "Criminal Laws"
+Also added the following criminal laws as requested:
+- **Penal Code (刑法)** (ID: `140AC0000000045`)
+    - Total Articles: 301 (Note: Some articles might be merged or missing depending on XML structure)
+- **Code of Criminal Procedure (刑事訴訟法)** (ID: `323AC0000000131`)
+    - Total Articles: 715
+- **Status**: Complete.
+
 
 
